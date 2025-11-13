@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GITHINJI HOUSING UNITS</title>
+<style>
+  :root {
+    --bg: #000814;
+    --blue: #0077ff;
+    --card: #001f3f;
+    --text: #e0e0ff;
+    --muted: #a0a0d0;
+  }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background-color: #001d3d;
+    text-align: center;
+    padding: 20px;
+  }
+  header h1 { color: var(--blue); margin: 0; }
+  header p { color: var(--muted); }
+
+  /* Login Page */
+  #loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: radial-gradient(circle at top, #001d3d 0%, #000 100%);
+  }
+  #loginBox {
+    background: #001f3f;
+    padding: 30px 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    text-align: center;
+    width: 90%;
+    max-width: 360px;
+  }
+  #loginBox h2 {
+    color: var(--blue);
+    margin-bottom: 15px;
+  }
+  #loginBox input {
+    width: 85%;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+  }
+  #loginBox button {
+    background: var(--blue);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .filters {
+    background: #001d3d;
+    text-align: center;
+    padding: 10px;
+  }
+  .filters select, .filters button {
+    margin: 6px;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+  }
+  .filters button {
+    background: var(--blue);
+    color: white;
+    cursor: pointer;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+    padding: 15px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .map-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.25;
+    width: 100%;
+    height: 100%;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/5/55/BlankMap-World-Micro.svg");
+    background-size: cover;
+  }
+  .card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  .info {
+    padding: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .info h3 { color: var(--blue); margin: 4px 0; }
+  .btn {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  footer {
+    background: #001d3d;
+    text-align: center;
+    padding: 15px;
+    color: var(--muted);
+  }
+  .modal-bg {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .modal input {
+    width: 80%;
+    margin: 5px;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage">
+  <div id="loginBox">
+    <h2>GITHINJI HOUSING UNITS</h2>
+    <input type="text" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Log In</button>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="mainPage" style="display:none;">
+  <header>
+    <h1>🏠 Houses near University of Embu</h1>
+    <p>Affordable rentals (KES 3,000 - 4,500) within 1–4 km radius</p>
+  </header>
+
+  <div class="filters">
+    <label>Max Distance:</label>
+    <select id="distance">
+      <option value="4">4 km</option>
+      <option value="3">3 km</option>
+      <option value="2">2 km</option>
+      <option value="1">1 km</option>
+    </select>
+    <label>Type:</label>
+    <select id="type">
+      <option value="all">All</option>
+      <option value="4x4">4x4 Mansion</option>
+      <option value="bedsitter">Bedsitter</option>
+      <option value="1bed">One Bedroom</option>
+    </select>
+    <button onclick="filterHouses()">Filter</button>
+    <button onclick="logout()">Log out</button>
+  </div>
+
+  <div class="grid" id="houseGrid"></div>
+
+  <footer>
+    Contact: <b>Githinjiisakiller@gmail.com</b> | 0701168148 <br>
+    Visit: Ngotho Enterprises near Lipa Tax Area
+  </footer>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>Book This House</h3>
+    <p id="modalHouse"></p>
+    <input type="text" placeholder="Your Name" id="name">
+    <input type="text" placeholder="Your Phone" id="phone">
+    <button class="btn" onclick="sendBooking()">Send Booking</button>
+    <button class="btn" style="background:#444;" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+const houses = [
+  { name: "Full suited 4x4 mansion", type: "4x4", rent: 4500, distance: 2, img: "https://propscout.co.ke/storage/properties/files/spacious-4-bedroom-maisonnete-to-let-in-a-gated-community-near-kamiti-prisons-kxqmo.jpg" },
+  { name: "Well suited bedsitter", type: "bedsitter", rent: 3200, distance: 3, img: "https://i.pinimg.com/474x/53/67/3d/53673df002b7075a12486ae902f2f31a.jpg" },
+  { name: "One bedroom house", type: "1bed", rent: 3500, distance: 4, img: "https://images.kenyapropertycentre.com/properties/images/49606/0684564e1a3aa7-1-bedroom-house-detached-bungalows-for-rent-karen-nairobi.jpg" },
+  { name: "Compact bedsitter", type: "bedsitter", rent: 3000, distance: 1, img: "https://www.afrohouseplans.com/wp-content/uploads/2022/11/1_3-Photo.jpg.webp" }
+];
+
+let loggedIn = false;
+
+function login() {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+  if (email && pass) {
+    loggedIn = true;
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("mainPage").style.display = "block";
+    renderHouses(houses);
+  } else {
+    alert("Please enter both email and password.");
+  }
+}
+
+function logout() {
+  loggedIn = false;
+  document.getElementById("mainPage").style.display = "none";
+  document.getElementById("loginPage").style.display = "flex";
+}
+
+function renderHouses(list) {
+  const grid = document.getElementById("houseGrid");
+  grid.innerHTML = "";
+  list.forEach(h => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div class="map-bg"></div>
+      <img src="${h.img}" alt="${h.name}">
+      <div class="info">
+        <h3>${h.name}</h3>
+        <p>Type: ${h.type}</p>
+        <p>Rent: <b>KES ${h.rent}</b></p>
+        <p>Distance: ${h.distance} km from University</p>
+        <button class="btn" onclick="book('${h.name}')">Book</button>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function filterHouses() {
+  const dist = parseFloat(document.getElementById("distance").value);
+  const type = document.getElementById("type").value;
+  const filtered = houses.filter(h =>
+    h.distance <= dist && (type === "all" || h.type === type)
+  );
+  renderHouses(filtered);
+}
+
+function book(name) {
+  if (!loggedIn) {
+    alert("Please log in first to book.");
+    return;
+  }
+  document.getElementById("modalHouse").innerText = name;
+  document.getElementById("modalBg").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modalBg").style.display = "none";
+}
+
+function sendBooking() {
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  if (!name || !phone) {
+    alert("Please fill in your name and phone.");
+    return;
+  }
+  alert(`✅ Booking sent for ${document.getElementById("modalHouse").innerText}!\nContact: Githinjiisakiller@gmail.com or 0701168148`);
+  closeModal();
+}
+</script>
+</body>
+</html>
+
